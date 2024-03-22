@@ -1,19 +1,39 @@
 package main
 
 import (
+	"github.com/17HIERARCH70/messageService/sso/internal/app"
+	"github.com/17HIERARCH70/messageService/sso/internal/config"
 	"log/slog"
 	"os"
-	"sso/sso/internal/config"
+	"os/signal"
+	"syscall"
+)
+
+const (
+	envLocal = "local"
+	envDev   = "dev"
+	envProd  = "prod"
 )
 
 func main() {
 	cfg := config.MustLoad()
+
 	log := setupLogger(cfg.Env)
-	// TODO: инициализировать логгер
 
-	// TODO: инициализировать приложение (app)
+	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
 
-	// TODO: запустить gRPC-сервер приложения
+	go func() {
+		application.GRPCServer.MustRun()
+	}()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	// Waiting for SIGINT (pkill -2) or SIGTERM
+	<-stop
+
+	application.GRPCServer.Stop()
+	log.Info("Gracefully stopped")
 }
 
 func setupLogger(env string) *slog.Logger {

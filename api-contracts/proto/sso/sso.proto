@@ -39,5 +39,5 @@ message RestorePasswordRequest {
 }
 
 message RestorePasswordResponse {
-  bool success = 1; // Indicates whether password restoration was successful.
+  string token = 1; // Restore token for restoring the password.
 }

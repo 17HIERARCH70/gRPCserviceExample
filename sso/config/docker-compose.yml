@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+  flyway:
+    image: flyway/flyway
+    command: -url=jdbc:sqlite:"~/go/src/github.com/17HIERARCH70/messageService/sso/storage/sso_data.db" -locations=filesystem:"~/go/src/github.com/17HIERARCH70/messageService/sso/migrations migrate"
+    volumes:
+      - ./storage:/flyway/sqlite
+      - ./migrations:/flyway/sql
+    environment:
+      - FLYWAY_URL=jdbc:sqlite:/flyway/sqlite/sso_data.db
+      - FLYWAY_LOCATIONS=filesystem:/flyway/sql

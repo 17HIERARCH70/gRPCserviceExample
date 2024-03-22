@@ -1,5 +1,6 @@
 env: "local"
-storage_path: "./storage/messageService.db"
+storage_path: "~/go/src/github.com/17HIERARCH70/messageService/sso/storage/sso_data.db"
+
 grpc:
   port: 5145
   timeout: 10h
