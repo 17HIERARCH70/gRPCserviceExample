@@ -1,4 +1,4 @@
-module sso
+module  github.com/17HIERARCH70/messageService/sso
 
 go 1.22.1
 
