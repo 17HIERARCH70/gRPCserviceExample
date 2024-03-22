@@ -1,0 +1,5 @@
+env: "local"
+storage_path: "./storage/messageService.db"
+grpc:
+  port: 5145
+  timeout: 10h
