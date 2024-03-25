@@ -1,0 +1,5 @@
+CREATE TABLE apps
+(
+    id   SERIAL PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL
+);

@@ -5,11 +5,12 @@ go 1.22.1
 require (
 	github.com/17HIERARCH70/messageService/api-contracts/gen/go/sso v0.0.0-20240322155250-7cd9bac5edf3
 	github.com/brianvoe/gofakeit/v6 v6.28.0
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/fatih/color v1.16.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
-	github.com/mattn/go-sqlite3 v1.14.22
+	github.com/jmoiron/sqlx v1.3.5
+	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.19.0
 	google.golang.org/grpc v1.62.1
@@ -20,6 +21,9 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect

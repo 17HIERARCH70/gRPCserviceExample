@@ -1,6 +1,0 @@
-CREATE TABLE users
-(
-    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    email     TEXT NOT NULL UNIQUE,
-    pass_hash TEXT NOT NULL
-);
