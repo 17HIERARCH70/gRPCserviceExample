@@ -17,6 +17,8 @@ service Auth {
   rpc IsAdmin (IsAdminRequest) returns (IsAdminResponse);
   // Logout -> func to logout the user.
   rpc Logout (LogoutRequest) returns (LogoutResponse);
+  // GetIdByEmail -> giving id of user by email.
+  rpc GetIdByEmail (GetIdByEmailRequest) returns (GetIdByEmailResponse);
 }
 message RegisterRequest {
   string email = 1; // Email of the user to register.
@@ -59,4 +61,12 @@ message LogoutRequest {
 
 message LogoutResponse {
   bool success = 1; // Indicates whether the logout was successful.
+}
+
+message GetIdByEmailRequest {
+  string email = 1; // Email of user
+}
+
+message GetIdByEmailResponse {
+  int64 user_id = 1; // User id
 }

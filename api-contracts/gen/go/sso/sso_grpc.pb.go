@@ -32,6 +32,8 @@ type AuthClient interface {
 	IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error)
 	// Logout -> func to logout the user.
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
+	// GetIdByEmail -> giving id of user by email.
+	GetIdByEmail(ctx context.Context, in *GetIdByEmailRequest, opts ...grpc.CallOption) (*GetIdByEmailResponse, error)
 }
 
 type authClient struct {
@@ -87,6 +89,15 @@ func (c *authClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc
 	return out, nil
 }
 
+func (c *authClient) GetIdByEmail(ctx context.Context, in *GetIdByEmailRequest, opts ...grpc.CallOption) (*GetIdByEmailResponse, error) {
+	out := new(GetIdByEmailResponse)
+	err := c.cc.Invoke(ctx, "/auth.Auth/GetIdByEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
@@ -101,6 +112,8 @@ type AuthServer interface {
 	IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error)
 	// Logout -> func to logout the user.
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
+	// GetIdByEmail -> giving id of user by email.
+	GetIdByEmail(context.Context, *GetIdByEmailRequest) (*GetIdByEmailResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -122,6 +135,9 @@ func (UnimplementedAuthServer) IsAdmin(context.Context, *IsAdminRequest) (*IsAdm
 }
 func (UnimplementedAuthServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedAuthServer) GetIdByEmail(context.Context, *GetIdByEmailRequest) (*GetIdByEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIdByEmail not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -226,6 +242,24 @@ func _Auth_Logout_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_GetIdByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetIdByEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).GetIdByEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.Auth/GetIdByEmail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).GetIdByEmail(ctx, req.(*GetIdByEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -252,6 +286,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Logout",
 			Handler:    _Auth_Logout_Handler,
+		},
+		{
+			MethodName: "GetIdByEmail",
+			Handler:    _Auth_GetIdByEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
