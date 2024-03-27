@@ -67,3 +67,13 @@ func (s *Storage) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 	}
 	return isAdmin, nil
 }
+
+func (s *Storage) GetIdByEmail(ctx context.Context, email string) (int64, error) {
+	const query = `SELECT id FROM users WHERE email = $1`
+	var id int64
+	err := s.db.QueryRowContext(ctx, query, email).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}

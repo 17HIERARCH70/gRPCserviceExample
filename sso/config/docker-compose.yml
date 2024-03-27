@@ -1,11 +1,39 @@
-version: '3.7'
+version: '3.8'
+
 services:
-  flyway:
-    image: flyway/flyway
-    command: -url=jdbc:sqlite:"~/go/src/github.com/17HIERARCH70/messageService/sso/storage/sso_data.db" -locations=filesystem:"~/go/src/github.com/17HIERARCH70/messageService/sso/migrations migrate"
-    volumes:
-      - ./storage:/flyway/sqlite
-      - ./migrations:/flyway/sql
+  postgres:
+    image: postgres:13
     environment:
-      - FLYWAY_URL=jdbc:sqlite:/flyway/sqlite/sso_data.db
-      - FLYWAY_LOCATIONS=filesystem:/flyway/sql
+      POSTGRES_USER: ssoadmin
+      POSTGRES_PASSWORD: ssoadmin
+      POSTGRES_DB: sso
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  migrate:
+    image: migrate/migrate
+    depends_on:
+      - postgres
+    volumes:
+      - ./migrations:/migrations
+    command: [ "-path=/migrations/", "-database", "postgres://ssoadmin:ssoadmin@postgres/sso?sslmode=disable", "up" ]
+    environment:
+      POSTGRES_USER: ssoadmin
+      POSTGRES_PASSWORD: ssoadmin
+      POSTGRES_DB: sso
+
+  sso_service:
+    build: .
+    ports:
+      - "5145:5145"
+    depends_on:
+      - migrate
+    volumes:
+      - ./config:/config
+    environment:
+      CONFIG_PATH: /config/config-local.yaml
+
+volumes:
+  postgres_data:

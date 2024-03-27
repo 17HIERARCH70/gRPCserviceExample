@@ -29,6 +29,21 @@ type Auth interface {
 		email string,
 		password string,
 	) (userID int64, err error)
+
+	IsAdmin(
+		ctx context.Context,
+		userID int64,
+	) (bool, error)
+
+	GetIdByEmail(
+		ctx context.Context,
+		email string,
+	) (int64, error)
+
+	RestorePassword(
+		ctx context.Context,
+		email string,
+	) error
 }
 
 func Register(gRPCServer *grpc.Server, auth Auth) {
@@ -124,4 +139,19 @@ func (s *serverAPI) IsAdmin(
 	}
 
 	return &ssov1.IsAdminResponse{IsAdmin: isAdmin}, nil
+}
+
+func (s *serverAPI) GetIdByEmail(
+	ctx context.Context,
+	in *ssov1.GetIdByEmailRequest,
+) (*ssov1.GetIdByEmailResponse, error) {
+	if in.Email == "" {
+		return nil, status.Error(codes.InvalidArgument, "email is required")
+	}
+
+	uid, err := s.auth.GetIdByEmail(ctx, in.GetEmail())
+	if err != nil {
+
+	}
+	return &ssov1.GetIdByEmailResponse{UserId: uid}, nil
 }

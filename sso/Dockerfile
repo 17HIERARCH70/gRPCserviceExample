@@ -1,34 +1,32 @@
 # Используйте официальный образ Go как образ сборки.
 FROM golang:1.22.1 as builder
 
-# Установите рабочую директорию в контейнере.
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Скопируйте модульные файлы Go и загрузите зависимости.
+# Копируем go модули и их зависимости
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-# Скопируйте исходный код проекта.
+# Копируем исходный код приложения
 COPY . .
 
-# Соберите бинарный файл.
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o sso ./cmd/sso
+# Собираем приложение
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o sso_service ./sso/main
 
-# Используйте образ Distroless для минимального рабочего окружения.
-FROM gcr.io/distroless/base-debian10
+# Используем облегченный образ для запуска
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
 
-WORKDIR /
+WORKDIR /root/
 
-# Скопируйте бинарный файл и конфигурационный файл в контейнер.
-COPY --from=builder /app/sso .
-COPY --from=builder /app/config/config_local.yaml /config/config.yaml
+# Копируем собранный исполняемый файл из предыдущего шага
+COPY --from=builder /app/sso_service .
 
-# Укажите переменную среды для пути к конфигурационному файлу.
-ENV CONFIG_PATH=/config/config.yaml
-
-# Укажите порт, на котором будет работать сервис.
+# Порт, который будет прослушивать приложение
 EXPOSE 5145
 
-# Запустите сервис SSO.
-CMD ["/sso"]
+# Запускаем приложение
+CMD ["./sso_service"]
+
