@@ -48,8 +48,11 @@ func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
 	fields := make(map[string]interface{}, r.NumAttrs())
 
 	r.Attrs(func(a slog.Attr) bool {
-		fields[a.Key] = a.Value.Any()
-
+		if err, ok := a.Value.Any().(error); ok {
+			fields[a.Key] = err.Error()
+		} else {
+			fields[a.Key] = a.Value.Any()
+		}
 		return true
 	})
 
@@ -85,13 +88,5 @@ func (h *PrettyHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 		Handler: h.Handler,
 		l:       h.l,
 		attrs:   attrs,
-	}
-}
-
-func (h *PrettyHandler) WithGroup(name string) slog.Handler {
-	// TODO: implement
-	return &PrettyHandler{
-		Handler: h.Handler.WithGroup(name),
-		l:       h.l,
 	}
 }

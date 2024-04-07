@@ -1,4 +1,4 @@
-module github.com/17HIERARCH70/messageService/api-contracts/gen/go/sso
+module github.com/17HIERARCH70/gRPCserviceExample/api-contracts/gen/go/sso
 
 go 1.22.1
 

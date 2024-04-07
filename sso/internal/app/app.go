@@ -1,10 +1,9 @@
 package app
 
 import (
-	grpcapp "github.com/17HIERARCH70/messageService/sso/internal/app/grpc"
-	"github.com/17HIERARCH70/messageService/sso/internal/config"
-	"github.com/17HIERARCH70/messageService/sso/internal/services/auth"
-	"github.com/17HIERARCH70/messageService/sso/internal/storage/postgresql"
+	grpcapp "github.com/17HIERARCH70/gRPCserviceExample/sso/internal/app/grpc"
+	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/services/auth"
+	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/storage/sqlite"
 	"log/slog"
 	"time"
 )
@@ -16,15 +15,13 @@ type App struct {
 func New(
 	log *slog.Logger,
 	grpcPort int,
+	storagePath string,
 	tokenTTL time.Duration,
-	dbConfig *config.PostgresSQLConfig,
 ) *App {
-	db, err := postgresql.Connect(dbConfig)
+	storage, err := sqlite.New(storagePath)
 	if err != nil {
 		panic(err)
 	}
-
-	storage := postgresql.NewStorage(db)
 
 	authService := auth.New(log, storage, storage, storage, tokenTTL)
 

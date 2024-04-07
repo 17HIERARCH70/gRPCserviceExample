@@ -2,19 +2,18 @@ package config
 
 import (
 	"flag"
-	"fmt"
-	"github.com/ilyakaznacheev/cleanenv"
-	_ "github.com/lib/pq"
 	"os"
 	"time"
+
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
-	Env            string            `yaml:"env" env-default:"local"`
-	PostgresSQL    PostgresSQLConfig `yaml:"postgres"`
-	GRPC           GRPCConfig        `yaml:"grpc"`
+	Env            string     `yaml:"env" env-default:"local"`
+	StoragePath    string     `yaml:"storage_path" env-required:"true"`
+	GRPC           GRPCConfig `yaml:"grpc"`
 	MigrationsPath string
-	TokenTTL       time.Duration `yaml:"TokenTTL" env-default:"1h"`
+	TokenTTL       time.Duration `yaml:"token_ttl" env-default:"1h"`
 }
 
 type GRPCConfig struct {
@@ -22,23 +21,17 @@ type GRPCConfig struct {
 	Timeout time.Duration `yaml:"timeout"`
 }
 
-type PostgresSQLConfig struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	Database string `yaml:"database"`
-}
-
-// Priority: flag > env > default.
-// Default value is empty string.
-
 func MustLoad() *Config {
 	configPath := fetchConfigPath()
 	if configPath == "" {
-		panic("config is empty")
+		panic("config path is empty")
 	}
 
+	return MustLoadPath(configPath)
+}
+
+func MustLoadPath(configPath string) *Config {
+	// check if file exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		panic("config file does not exist: " + configPath)
 	}
@@ -46,12 +39,15 @@ func MustLoad() *Config {
 	var cfg Config
 
 	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
-		panic("config path if empty " + err.Error())
+		panic("cannot read config: " + err.Error())
 	}
 
 	return &cfg
 }
 
+// fetchConfigPath fetches config path from command line flag or environment variable.
+// Priority: flag > env > default.
+// Default value is empty string.
 func fetchConfigPath() string {
 	var res string
 
@@ -63,10 +59,4 @@ func fetchConfigPath() string {
 	}
 
 	return res
-}
-
-// DSN returns the Data Source Name.
-func (c *PostgresSQLConfig) DSN() string {
-	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		c.Host, c.Port, c.Username, c.Password, c.Database)
 }

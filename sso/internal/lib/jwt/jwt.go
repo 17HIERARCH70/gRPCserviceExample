@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"github.com/17HIERARCH70/messageService/sso/internal/domain/models"
+	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/domain/models"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
 )

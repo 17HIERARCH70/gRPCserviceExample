@@ -2,27 +2,34 @@ package suite
 
 import (
 	"context"
-	ssov1 "github.com/17HIERARCH70/messageService/api-contracts/gen/go/sso"
-	"github.com/17HIERARCH70/messageService/sso/internal/config"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/config"
 	"net"
+	"os"
 	"strconv"
 	"testing"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Suite struct {
-	*testing.T
-	Cfg        *config.Config
-	AuthClient ssov1.AuthClient
+	*testing.T                  // Потребуется для вызова методов *testing.T внутри Suite
+	Cfg        *config.Config   // Конфигурация приложения
+	AuthClient ssov1.AuthClient // Клиент для взаимодействия с gRPC-сервером
 }
 
+const (
+	grpcHost = "localhost"
+)
+
 // New creates new test suite.
+//
+// TODO: for pipeline tests we need to wait for app is ready
 func New(t *testing.T) (context.Context, *Suite) {
 	t.Helper()
 	t.Parallel()
 
-	cfg := config.MustLoad()
+	cfg := config.MustLoadPath(configPath())
 
 	ctx, cancelCtx := context.WithTimeout(context.Background(), cfg.GRPC.Timeout)
 
@@ -31,20 +38,30 @@ func New(t *testing.T) (context.Context, *Suite) {
 		cancelCtx()
 	})
 
-	grpcAddress := net.JoinHostPort("grpcHost", strconv.Itoa(cfg.GRPC.Port))
-
-	cc, err := grpc.DialContext(context.Background(),
-		grpcAddress,
-		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	cc, err := grpc.NewClient(context.Background(),
+		grpcAddress(cfg),
+		grpc.WithTransportCredentials(insecure.NewCredentials())) // Используем insecure-коннект для тестов
 	if err != nil {
 		t.Fatalf("grpc server connection failed: %v", err)
 	}
 
-	authClient := ssov1.NewAuthClient(cc)
-
 	return ctx, &Suite{
 		T:          t,
 		Cfg:        cfg,
-		AuthClient: authClient,
+		AuthClient: ssov1.NewAuthClient(cc),
 	}
+}
+
+func configPath() string {
+	const key = "CONFIG_PATH"
+
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+
+	return "../config/local_tests.yaml"
+}
+
+func grpcAddress(cfg *config.Config) string {
+	return net.JoinHostPort(grpcHost, strconv.Itoa(cfg.GRPC.Port))
 }

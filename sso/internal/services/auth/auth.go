@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/17HIERARCH70/messageService/sso/internal/domain/models"
-	"github.com/17HIERARCH70/messageService/sso/internal/lib/jwt"
-	"github.com/17HIERARCH70/messageService/sso/internal/lib/logger/sl"
-	"github.com/17HIERARCH70/messageService/sso/internal/storage"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/domain/models"
+	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/lib/jwt"
+	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/lib/logger/sl"
+	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/storage"
 	"log/slog"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Auth struct {
@@ -25,6 +26,7 @@ var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=URLSaver
 type UserSaver interface {
 	SaveUser(
 		ctx context.Context,
@@ -36,8 +38,6 @@ type UserSaver interface {
 type UserProvider interface {
 	User(ctx context.Context, email string) (models.User, error)
 	IsAdmin(ctx context.Context, userID int64) (bool, error)
-	GetIdByEmail(ctx context.Context, email string) (int64, error)
-	RestorePassword(ctx context.Context, email string) (string, error)
 }
 
 type AppProvider interface {
@@ -163,25 +163,4 @@ func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 	log.Info("checked if user is admin", slog.Bool("is_admin", isAdmin))
 
 	return isAdmin, nil
-}
-
-// GetIdByEmail give id by user email.
-func (a *Auth) GetIdByEmail(ctx context.Context, email string) (int64, error) {
-	const op = "Auth.GetIdByEmail"
-
-	log := a.log.With(
-		slog.String("op", op),
-		slog.String("email", email),
-	)
-
-	log.Info("getting user id by email")
-
-	id, err := a.usrProvider.GetIdByEmail(ctx, email)
-	if err != nil {
-		return 0, fmt.Errorf("%s: %w", op, err)
-	}
-
-	log.Info("got user id by email", slog.Int64("user_id", id))
-
-	return id, nil
 }

@@ -3,7 +3,7 @@ package grpcapp
 import (
 	"context"
 	"fmt"
-	authgrpc "github.com/17HIERARCH70/messageService/sso/internal/grpc/auth"
+	authgrpc "github.com/17HIERARCH70/gRPCserviceExample/sso/internal/grpc/auth"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"google.golang.org/grpc"
@@ -27,8 +27,10 @@ func New(
 ) *App {
 	loggingOpts := []logging.Option{
 		logging.WithLogOnEvents(
+			//logging.StartCall, logging.FinishCall,
 			logging.PayloadReceived, logging.PayloadSent,
 		),
+		// Add any other option (check functions starting with logging.With).
 	}
 
 	recoveryOpts := []recovery.Option{
@@ -53,6 +55,8 @@ func New(
 	}
 }
 
+// InterceptorLogger adapts slog logger to interceptor logger.
+// This code is simple enough to be copied and not imported.
 func InterceptorLogger(l *slog.Logger) logging.Logger {
 	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
 		l.Log(ctx, slog.Level(lvl), msg, fields...)
@@ -84,6 +88,7 @@ func (a *App) Run() error {
 	return nil
 }
 
+// Stop stops gRPC server.
 func (a *App) Stop() {
 	const op = "grpcapp.Stop"
 
