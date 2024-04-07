@@ -26,7 +26,6 @@ var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 )
 
-//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=URLSaver
 type UserSaver interface {
 	SaveUser(
 		ctx context.Context,

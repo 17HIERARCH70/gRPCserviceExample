@@ -1,1 +1,22 @@
-.idea
+# Binaries and other executable files
+*/bin
+*/obj
+*/dist
+grpc-auth
+
+# Dependency directories
+vendor/
+go.sum
+
+# Ignore IDE and editor directories
+.idea/
+.vscode/
+*.swp
+
+# Ignore OS generated files like .DS_Store
+.DS_Store
+
+# Ignore specific application files
+sso/storage/sso.db
+sso/storage
+*.pem

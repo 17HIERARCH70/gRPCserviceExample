@@ -1,86 +1,54 @@
-# gRPC SSO Service
+# SSO Service
 
-## Обзор
+This Single Sign-On (SSO) service is designed to authenticate users across various systems. It's built using Go and can be easily deployed with Docker.
 
-Этот проект представляет собой службу Single Sign-On (SSO), реализованную с использованием gRPC. Она позволяет
-регистрировать пользователей, аутентифицироваться, восстанавливать пароль, проверять статус администратора и выполнять
-логаут.
+## Structure
 
-## Требования
+- `api-contracts/`: Protobuf files and generated Go code for gRPC.
+- `sso/`: Main application code including command line tools and internal libraries.
+- `migrations/`: SQL migration files for database schemas.
+- `storage/`: Persistent storage for SQLite databases.
 
-Для запуска этого проекта вам понадобится:
+## Getting Started
 
-- Docker
-- Docker Compose
-- gRPC клиент для тестирования (опционально)
+### Prerequisites
 
-## Установка и Запуск
+- Docker & Docker Compose
+- Go (optional for local development)
 
-### Шаг 1: Клонирование репозитория
+### Installation
 
-Клонируйте репозиторий в локальную директорию с помощью:
+#### Docker
+
+Clone the repository and navigate to the directory:
 
 ```bash
-git clone https://github.com/17HIERARCH70/messageService.git
-cd messageService
+git clone <repository-url>
+cd <repository-dir>
 ```
 
-### Шаг 2: Сборка и запуск с помощью Docker
-
-Используйте Docker Compose для сборки и запуска приложения и зависимостей:
+Start the service using Docker Compose:
 
 ```bash
 docker-compose up --build
 ```
 
-Эта команда соберёт образ вашего приложения, базы данных PostgreSQL и выполнит необходимые миграции.
+The service should now be accessible at `http://localhost:44044`.
 
-### Шаг 3: Проверка работоспособности
+#### Local Setup
 
-Для проверки работоспособности вы можете использовать любой gRPC клиент, чтобы выполнить запросы к вашему сервису.
-
-## Примеры использования
-
-### Регистрация пользователя
-
-```plaintext
-rpc Register (RegisterRequest) returns (RegisterResponse);
-```
-
-- `RegisterRequest` содержит `email` и `password`.
-- `RegisterResponse` возвращает `user_id`.
-
-### Вход пользователя
-
-```plaintext
-rpc Login (LoginRequest) returns (LoginResponse);
-```
-
-- `LoginRequest` содержит `email`, `password` и `app_id`.
-- `LoginResponse` возвращает `token`.
-
-## Конфигурация
-
-Конфигурационные файлы находятся в директории `config/`. Для локальной разработки используйте `config-local.yaml`.
-
-## Миграции
-
-Миграции находятся в директории `migrations/`. Они автоматически применяются при запуске приложения через Docker
-Compose.
-
-## Тестирование
-
-Для запуска тестов используйте следующую команду:
+To run locally without Docker:
 
 ```bash
-docker-compose run sso_service go test ./...
+cd sso
+go run ./cmd/sso --config=config/prod.yaml
 ```
 
-Эта команда выполнит все тесты в проекте.
+### API
 
-## Вклад в проект
+Refer to the `api-contracts/proto/sso/sso.proto` file for gRPC service definitions.
 
-Мы приветствуем любые вклады в проект. Пожалуйста, отправляйте pull requests или создавайте issues для предложений и
-отчётов об ошибках.
+## Authors
 
-```
+- **Nikita Belyakov** - *Git* - [17HIERARCH70](https://github.com/17HIERARCH70/)
+

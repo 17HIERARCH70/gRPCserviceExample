@@ -3,13 +3,13 @@ package suite
 import (
 	"context"
 	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/config"
+	ssov1 "github.com/17HIERARCH70/messageService/api-contracts/gen/go/sso"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"os"
 	"strconv"
 	"testing"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Suite struct {
@@ -38,7 +38,7 @@ func New(t *testing.T) (context.Context, *Suite) {
 		cancelCtx()
 	})
 
-	cc, err := grpc.NewClient(context.Background(),
+	cc, err := grpc.DialContext(context.Background(),
 		grpcAddress(cfg),
 		grpc.WithTransportCredentials(insecure.NewCredentials())) // Используем insecure-коннект для тестов
 	if err != nil {

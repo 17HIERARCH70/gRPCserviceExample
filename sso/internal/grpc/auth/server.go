@@ -3,9 +3,9 @@ package authgrpc
 import (
 	"context"
 	"errors"
-	ssov1 "github.com/17HIERARCH70/gRPCserviceExample/api-contracts/gen/go/sso"
 	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/services/auth"
 	"github.com/17HIERARCH70/gRPCserviceExample/sso/internal/storage"
+	ssov1 "github.com/17HIERARCH70/messageService/api-contracts/gen/go/sso"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
