@@ -1,13 +1,12 @@
 package tests
 
 import (
+	"github.com/17HIERARCH70/gRPCserviceExample/sso/tests/suite"
+	"github.com/brianvoe/gofakeit/v6"
 	"testing"
 	"time"
 
-	"grpc-service-ref/tests/suite"
-
-	ssov1 "github.com/JustSkiv/protos/gen/go/sso"
-	"github.com/brianvoe/gofakeit/v6"
+	ssov1 "github.com/17HIERARCH70/gRPCserviceExample/api-contracts/gen/go/sso"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

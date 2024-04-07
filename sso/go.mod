@@ -5,6 +5,7 @@ go 1.22.1
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/aws/smithy-go v1.20.2 // indirect
+	github.com/brianvoe/gofakeit/v6 v6.28.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/golang-migrate/migrate/v4 v4.17.0 // indirect
